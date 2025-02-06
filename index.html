@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Marketplace</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.11/web3.min.js"></script>
+</head>
+<body class="pt-2 pb-5">
+    <div class="container mt-5">
+    <h2>AI Model Marketplace</h2>
+
+    <div id="wallet-status" class="alert alert-info" style="display:none;">
+        <span id="wallet-address"></span> | Balance: <span id="token-balance"></span>
+    </div>
+
+    <div class="mt-3">
+        <button id="connect-wallet" class="btn btn-primary">Connect MetaMask</button>
+        <button class="btn btn-success"><a href="#add-model-section" class="text-white text-decoration-none">Add Model</a></button>
+    </div>
+
+    <h4 class="mt-5">AI Models for Sale</h4>
+    <p><span id="model-count">0</span><span> Models Available</span></p>
+    <div id="ai-models-list" class="list-group">
+
+        <!-- AI models will be populated here -->
+    </div>
+
+        <hr>
+        <h4 id="add-model-section">Add a New Model Listing</h4>
+        <form id="model-listing-form">
+        <div class="form-group">
+            <label for="model-name">Model Name</label>
+            <input type="text" class="form-control" id="model-name" required>
+        </div>
+        <div class="form-group">
+            <label for="model-description">Description</label>
+            <textarea class="form-control" id="model-description" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="model-price">Price (in ERC-20 tokens)</label>
+            <input type="number" class="form-control" id="model-price" required>
+        </div>
+        <div class="form-group">
+            <label for="model-file">Upload Model File</label>
+            <input type="file" class="form-control" id="model-file" required>
+        </div>
+        <button type="submit" class="btn btn-success">List Model</button>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
