@@ -1,9 +1,8 @@
 let web3;
 let account;
 let contract;
-const addresses = await fetch('scripts/addresses.json').then(response => response.json());
-const tokenAddress = addresses.tokenAddress;
-const marketplaceAddress = addresses.marketplaceAddress;
+const tokenAddress = "0x9c5bB81cc824C7375f4044452D026Fe059A549cB";
+const marketplaceAddress = "0x01e4f967769753E4Ea982B60Bc92177845135C68";
 const tokenAbi = [
 	{
 		"inputs": [
@@ -30,7 +29,13 @@ const tokenAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "initialSupply",
+				"type": "uint256"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -146,15 +151,40 @@ const tokenAbi = [
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "TransactionTracked",
+		"type": "event"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "to",
+				"name": "recipient",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
@@ -274,6 +304,84 @@ const tokenAbi = [
 				"internalType": "uint8",
 				"name": "",
 				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLastReceiverAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLastSenderAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLastTransactionTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastReceiver",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastSender",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -514,6 +622,11 @@ const marketplaceAbi = [
 				"internalType": "uint256",
 				"name": "averageRating",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isSold",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -529,6 +642,11 @@ const marketplaceAbi = [
 		],
 		"name": "models",
 		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
 			{
 				"internalType": "string",
 				"name": "name",
@@ -558,6 +676,11 @@ const marketplaceAbi = [
 				"internalType": "uint256",
 				"name": "ratingCount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isSold",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -601,7 +724,6 @@ async function connectWallet() {
         document.getElementById('wallet-status').style.display = 'block';
         document.getElementById('wallet-address').textContent = account;
         loadTokenBalance();
-        getModelCount();
         getModels();
     } else {
         alert('MetaMask is not installed');
@@ -683,10 +805,11 @@ async function purchaseModel(modelId) {
 async function getModels() {
     const marketplaceContract = new web3.eth.Contract(marketplaceAbi, marketplaceAddress);
     const totalModels = await marketplaceContract.methods.totalModels().call();
-
+	getModelCount(totalModels);
     for (let i = 0; i < totalModels; i++) {
+		console.log("preload test");
         const model = await marketplaceContract.methods.getModelDetails(i).call();
-        
+        console.log("afterload test");
         renderModel({
             id: i,
             name: model[0],
@@ -719,9 +842,8 @@ function renderModel(model) {
 }
 
 
-async function getModelCount() {
-    const marketplaceContract = new web3.eth.Contract(marketplaceAbi, marketplaceAddress);
-    document.getElementById("model-count").innerText = await marketplaceContract.methods.totalModels().call();
+async function getModelCount(totalModels) {
+    document.getElementById("model-count").innerText = totalModels;
 }
 
 
