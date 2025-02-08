@@ -47,6 +47,12 @@ const marketplaceAddress = "MARKETPLACE_ADDRESS";
 New listed model will appear immediately after clicking "List Model" button.
 ![New Model](images/new_model_example.png)
 
+### Buy Models: Buy AI models using ERC-20 tokens.
+Users can purchase for AI models using ERC-20 tokens.
+![Buy Models](images/metamask_approve_transaction.png)
+![Buy Models](images/metamask_transaction.png)
+![Buy Models](images/model_sold.png)
+
 ## Example
 
 When listing a new model into the listing, the user has to approve their action in Metamask, as shown in the example below:
