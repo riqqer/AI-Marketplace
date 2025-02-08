@@ -1,33 +1,9 @@
 let web3;
 let account;
 let contract;
-const tokenAddress = "TOKEN_ADDRESS";
-const marketplaceAddress = "MARKETPLACE_ADDRESS";
+const tokenAddress = "0x2bE79432e11589B52Bbbc8f3555fC62a7694e310";
+const marketplaceAddress = "0x0EAE374A31F4BBBfe6328AFaC6270661Ba6e129c";
 const tokenAbi = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"inputs": [
 			{
@@ -176,30 +152,6 @@ const tokenAbi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -228,35 +180,6 @@ const tokenAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "owner",
 				"type": "address"
 			},
@@ -275,6 +198,30 @@ const tokenAbi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -425,6 +372,59 @@ const tokenAbi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	}
 ];
 const marketplaceAbi = [
@@ -465,6 +465,12 @@ const marketplaceAbi = [
 				"internalType": "address",
 				"name": "creator",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
 			}
 		],
 		"name": "ModelListed",
@@ -587,6 +593,11 @@ const marketplaceAbi = [
 				"internalType": "uint256",
 				"name": "price",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
 			}
 		],
 		"name": "listModel",
@@ -643,6 +654,11 @@ const marketplaceAbi = [
 				"internalType": "bool",
 				"name": "isSold",
 				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -743,8 +759,7 @@ async function loadTokenBalance() {
     try {
         console.log("Fetching token balance...");
         const balance = await tokenContract.methods.balanceOf(account).call();
-        const decimals = await tokenContract.methods.decimals().call();
-        const formattedBalance = balance / (10 ** decimals);
+        const formattedBalance = balance;
 
         console.log(`Balance: ${formattedBalance}`);
         const element = document.getElementById('token-balance'); 
@@ -766,9 +781,11 @@ document.getElementById('model-listing-form').addEventListener('submit', async (
     const modelName = document.getElementById('model-name').value;
     const modelDescription = document.getElementById('model-description').value;
     const modelPrice = document.getElementById('model-price').value;
-    const modelFile = document.getElementById('model-file').files[0];
+    const modelLink = document.getElementById('model-link').value;
 
-    console.log('Listing Model:', modelName, modelDescription, modelPrice, modelFile);
+	
+
+    console.log('Listing Model:', modelName, modelDescription, modelPrice, modelLink);
 
     try {
         const accounts = await web3.eth.getAccounts();
@@ -776,7 +793,7 @@ document.getElementById('model-listing-form').addEventListener('submit', async (
 
         const marketplaceContract = new web3.eth.Contract(marketplaceAbi, marketplaceAddress);
 
-        await marketplaceContract.methods.listModel(modelName, modelDescription, modelPrice).send({ from: account });
+        await marketplaceContract.methods.listModel(modelName, modelDescription, modelPrice, modelLink).send({ from: account });
 
         console.log('Model listed successfully');
         window.location.reload(); // Reload the page to fetch and display the new model
@@ -784,14 +801,25 @@ document.getElementById('model-listing-form').addEventListener('submit', async (
         console.error('Error listing model:', error);
     }
 });
+
+
+
+
+
 async function purchaseModel(modelId) {
     try {
+		web3 = new Web3(window.ethereum);
         const accounts = await web3.eth.getAccounts();
         const account = accounts[0];
+    	const tokenContract = new web3.eth.Contract(tokenAbi, tokenAddress);
+        const marketplaceContract = new web3.eth.Contract(marketplaceAbi, marketplaceAddress); 	
 
-        const marketplaceContract = new web3.eth.Contract(marketplaceAbi, marketplaceAddress);
+		const model = await marketplaceContract.methods.getModelDetails(modelId).call();
+
 
         // Call the purchaseModel function from the smart contract
+		await tokenContract.methods.approve(marketplaceAddress, model[2]).send({ from: account });
+
         await marketplaceContract.methods.purchaseModel(modelId).send({ from: account });
 
         console.log('Model purchased successfully');
@@ -814,7 +842,7 @@ async function getModels() {
             id: i,
             name: model[0],
             description: model[1],
-            price: model[2],
+            price: model[2] / (10 ** 18),
             creator: model[3],
             averageRating: model[4] / 10, // Convert to decimal
             isSold: model[5] // Assuming all models are active for now

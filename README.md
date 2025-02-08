@@ -1,6 +1,9 @@
+## Team: Tomiris Tapen SE-2316, Ayaulym Kenzhekul SE-2314, Danial Yerzhigit SE-2314
+
 # AI Model Marketplace
 
 This project is a blockchain-based marketplace for AI models, allowing users to buy and sell models using ERC-20 tokens. The marketplace is built using Solidity, Web3, and Hardhat, with integration for wallet connectivity and token transactions.
+
 
 ![IntroImage](images/intro.png)
 

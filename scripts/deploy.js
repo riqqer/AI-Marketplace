@@ -8,7 +8,7 @@ async function main() {
     // Deploy MarketplaceToken contract
     console.log("Deploying MarketplaceToken...");
     const Token = await hre.ethers.getContractFactory("MarketplaceToken");
-    const initialSupply = hre.ethers.parseEther("1000000"); // 1M tokens
+    const initialSupply = hre.ethers.parseEther("10000"); // 1M tokens
     const token = await Token.deploy(initialSupply);
     await token.waitForDeployment();
     console.log("MarketplaceToken deployed to:", token.target);

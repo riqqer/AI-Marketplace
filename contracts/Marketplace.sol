@@ -15,39 +15,42 @@ contract AIModelMarketplace {
         uint256 totalRating;
         uint256 ratingCount;
         bool isSold;
+        string fileLink;
     }
 
     Model[] public models;
     mapping(address => uint256) public earnings;
 
-    event ModelListed(uint256 modelId, string name, uint256 price, address creator);
+    event ModelListed(uint256 modelId, string name, uint256 price, address creator, string fileLink);
     event ModelPurchased(uint256 modelId, address buyer);
     event ModelRated(uint256 modelId, uint8 rating);
 
     constructor(address _tokenAddress) {
         token = IERC20(_tokenAddress);
 
-        models.push(Model(1, "TextGPT", "It is AI like ChatGPT. Lorem ipsum dolor sit amet consectetur adipisicing elit.", 1600 * 10 ** 18, msg.sender, 19, 6, false));
-        models.push(Model(2, "ImageGenAI", "AI that generates images. Lorem ipsum dolor sit amet consectetur.", 2000 * 10 ** 18, msg.sender, 18, 4, false));
-        models.push(Model(3, "VoiceAssistAI", "AI for voice assistance. Lorem ipsum dolor sit amet.", 50 * 10 ** 18, msg.sender, 10, 6, false));
+        models.push(Model(1, "TextGPT", "It is AI like ChatGPT. Lorem ipsum dolor sit amet consectetur adipisicing elit.", 1600 * 10 ** 18, msg.sender, 19, 6, false, "none"));
+        models.push(Model(2, "ImageGenAI", "AI that generates images. Lorem ipsum dolor sit amet consectetur.", 2000 * 10 ** 18, msg.sender, 18, 4, false, "none"));
+        models.push(Model(3, "VoiceAssistAI", "AI for voice assistance. Lorem ipsum dolor sit amet.", 50 * 10 ** 18, msg.sender, 10, 6, false, "none"));
     }
 
     // List a new model
-    function listModel(string memory name, string memory description, uint256 price) public {
+    function listModel(string memory name, string memory description, uint256 price, string memory fileLink) public {
         require(price > 0, "Price must be greater than zero.");
+        require(bytes(fileLink).length > 0, "File path required.");
 
         models.push(Model({
             id: models.length,
             name: name,
             description: description,
-            price: price,
+            price: price * 10 ** 18,
             creator: msg.sender,
             totalRating: 0,
             ratingCount: 0,
-            isSold: false
+            isSold: false,
+            fileLink: fileLink
         }));
 
-        emit ModelListed(models.length - 1, name, price, msg.sender);
+        emit ModelListed(models.length - 1, name, price, msg.sender, fileLink);
     }
 
     // Purchase a model using the ERC20 token
@@ -56,7 +59,6 @@ contract AIModelMarketplace {
         Model storage model = models[modelId];
         require(model.creator != msg.sender, "Creator cannot purchase their own model.");
         require(token.balanceOf(msg.sender) >= model.price, "Insufficient balance.");
-        token.approve(msg.sender, model.price);
 
         // Transfer the price to the creator
         token.transferFrom(msg.sender, model.creator, model.price);
