@@ -1,8 +1,8 @@
 let web3;
 let account;
 let contract;
-const tokenAddress = "0x88B5e3D9d783d663C8D138eAbcCbdD12854B4fE7";
-const marketplaceAddress = "0xEE0Ba2bc064E473207C68e79202901C839167842";
+const tokenAddress = "TOKEN_ADDRESS";
+const marketplaceAddress = "MARKETPLACE_ADDRESS";
 const tokenAbi = [
 	{
 		"inputs": [

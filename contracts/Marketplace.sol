@@ -56,6 +56,7 @@ contract AIModelMarketplace {
         Model storage model = models[modelId];
         require(model.creator != msg.sender, "Creator cannot purchase their own model.");
         require(token.balanceOf(msg.sender) >= model.price, "Insufficient balance.");
+        token.approve(msg.sender, model.price);
 
         // Transfer the price to the creator
         token.transferFrom(msg.sender, model.creator, model.price);

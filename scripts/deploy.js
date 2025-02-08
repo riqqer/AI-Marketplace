@@ -19,17 +19,6 @@ async function main() {
     const marketplace = await Marketplace.deploy(token.target);
     await marketplace.waitForDeployment();
     console.log("AIModelMarketplace deployed to:", marketplace.target);
-
-    // Save addresses to a JSON file
-    const addresses = {
-        deployer: deployer.address,
-        tokenAddress: token.target,
-        marketplaceAddress: marketplace.target
-    };
-
-    const addressesPath = path.join(__dirname, 'addresses.json');
-    fs.writeFileSync(addressesPath, JSON.stringify(addresses, null, 2));
-    console.log("Addresses saved to:", addressesPath);
 }
 
 main().catch((error) => {
